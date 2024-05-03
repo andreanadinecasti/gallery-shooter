@@ -20,9 +20,9 @@ let config = {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
     width: 800,
-    height: 500,
-    scene: [Movement],
-    fps: { forceSetTimeOut: true, target: 30 }
+    height: 760,
+    scene: [Shooter],
+    fps: {forceSetTimeOut: true, target: 30 }
 }
 
 // Global variable to hold sprites
