@@ -1,7 +1,7 @@
 class Shooter extends Phaser.Scene {
     constructor() {
         super('sceneName');
-        this.my = { sprite: {}, bullets: [], enemies: [], enemyProjectiles: [] }; // Initialize arrays
+        this.my = { sprite: {}, bullets: [], bee_enemies: [], beesProjectiles: [] }; // Initialize arrays
         this.alienX = 400;
         this.alienY = 700;
         this.emitMode = false;
@@ -35,8 +35,8 @@ class Shooter extends Phaser.Scene {
         this.curve = new Phaser.Curves.Spline(this.points);
         //this.initializePath();
 
-        // Create enemies
-        this.createEnemies();
+        // Create bee_enemies
+        this.createBees();
 
         // Create text for displaying score
         this.scoreText = this.add.text(600, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
@@ -45,23 +45,23 @@ class Shooter extends Phaser.Scene {
         this.livesText = this.add.text(16, 16, 'Lives: 5', { fontSize: '32px', fill: '#fff' });
     }
 
-    createEnemies() {
+    createBees() {
         let my = this.my;
     
-        // Create multiple enemies
+        // Create multiple bee_enemies
         for (let i = 0; i < 5; i++) {
-            // Randomize starting position for each enemy
+            // Randomize starting position for each bees
             let startX = Phaser.Math.Between(0, 100);
             let startY = Phaser.Math.Between(100, 400);
     
-            // Create enemy sprite
-            let enemy = this.add.follower(this.curve, startX, startY, "bee");
-            enemy.visible = true;
-            my.enemies.push(enemy);
+            // Create bees sprite
+            let bees = this.add.follower(this.curve, startX, startY, "bee");
+            bees.visible = true;
+            my.bee_enemies.push(bees);
     
             // Set up movement along the path
             let speed = Phaser.Math.Between(2000, 4000); // Randomize speed
-            enemy.startFollow({
+            bees.startFollow({
                 from: 0,
                 to: 1,
                 delay: 0,
@@ -73,43 +73,43 @@ class Shooter extends Phaser.Scene {
                 rotationOffset: -90
             });
 
-        // Schedule enemy projectiles to emit every 3 seconds
+        // Schedule bees projectiles to emit every 3 seconds
         let projectileTimer = this.time.addEvent({
             delay: 3000, // Emit every 3 seconds
             callback: () => {
-                this.emitEnemyProjectile(enemy);
+                this.emitBeesProjectile(bees);
             },
             loop: true
         });
 
         // Store reference to the timer event
-        enemy.projectileTimer = projectileTimer;
+        bees.projectileTimer = projectileTimer;
         }
     }
 
-    destroyEnemy(enemy) {
+    destroyBees(bees) {
         let my = this.my;
     
-        // Cancel the timer event associated with this enemy
-        if (enemy.projectileTimer) {
-            enemy.projectileTimer.destroy();
+        // Cancel the timer event associated with this bees
+        if (bees.projectileTimer) {
+            bees.projectileTimer.destroy();
         }
     
-        // Remove the enemy from the enemies array
-        my.enemies.splice(my.enemies.indexOf(enemy), 1);
+        // Remove the bees from the bee_enemies array
+        my.bee_enemies.splice(my.bee_enemies.indexOf(bees), 1);
     
-        // Destroy the enemy sprite
-        enemy.destroy();
+        // Destroy the bees sprite
+        bees.destroy();
     }
     
 
     update() {
         let my = this.my;
 
-        // Update enemies
-        my.enemies.forEach(enemy => {
-            if (!enemy.active) return;
-            // Update enemy movement or behavior here
+        // Update bee_enemies
+        my.bee_enemies.forEach(bees => {
+            if (!bees.active) return;
+            // Update bees movement or behavior here
         });
 
         // Move alien left
@@ -136,12 +136,12 @@ class Shooter extends Phaser.Scene {
                 bullet.destroy();
                 my.bullets.splice(my.bullets.indexOf(bullet), 1);
             } else {
-                // Check for collision with enemies
-                my.enemies.forEach(enemy => {
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.getBounds(), enemy.getBounds())) {
+                // Check for collision with bee_enemies
+                my.bee_enemies.forEach(bees => {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.getBounds(), bees.getBounds())) {
                         bullet.destroy();
                         my.bullets.splice(my.bullets.indexOf(bullet), 1);
-                        this.destroyEnemy(enemy); // Destroy the enemy
+                        this.destroyBees(bees); // Destroy the bees
                         this.score += 25; // Increase score
                         this.scoreText.setText('Score: ' + this.score); // Update score text
                     }
@@ -149,11 +149,11 @@ class Shooter extends Phaser.Scene {
             }
         });
 
-        // Check for collision with enemy projectiles
-        my.enemyProjectiles.forEach(projectile => {
+        // Check for collision with bees projectiles
+        my.beesProjectiles.forEach(projectile => {
             if (Phaser.Geom.Intersects.RectangleToRectangle(my.sprite.alien.getBounds(), projectile.getBounds())) {
                 projectile.destroy();
-                my.enemyProjectiles.splice(my.enemyProjectiles.indexOf(projectile), 1);
+                my.beesProjectiles.splice(my.beesProjectiles.indexOf(projectile), 1);
                 this.lives--; // Decrease lives
                 this.livesText.setText('Lives: ' + this.lives); // Update lives text
                 if (this.lives <= 0) {
@@ -162,8 +162,8 @@ class Shooter extends Phaser.Scene {
             }
         });
 
-        // Update enemy projectiles
-        my.enemyProjectiles.forEach(projectile => {
+        // Update bees projectiles
+        my.beesProjectiles.forEach(projectile => {
             // Slowly float towards the alien
             let pathX = Phaser.Math.Between(0, 800);
             let pathY = 850;
@@ -175,7 +175,7 @@ class Shooter extends Phaser.Scene {
 
             if (projectile.y >= 800) {
                 projectile.destroy();
-                my.enemyProjectiles.splice(my.enemyProjectiles.indexOf(projectile), 1);
+                my.beesProjectiles.splice(my.beesProjectiles.indexOf(projectile), 1);
             }
         });
     }
@@ -187,10 +187,10 @@ class Shooter extends Phaser.Scene {
         my.bullets.push(bullet);
     }
 
-    emitEnemyProjectile(enemy) {
+    emitBeesProjectile(bees) {
         let my = this.my;
-        let projectile = this.add.sprite(enemy.x, enemy.y, "spinner");
+        let projectile = this.add.sprite(bees.x, bees.y, "spinner");
         projectile.setScale(0.4);
-        my.enemyProjectiles.push(projectile);
+        my.beesProjectiles.push(projectile);
     }
 }
