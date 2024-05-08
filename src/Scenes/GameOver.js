@@ -4,18 +4,16 @@ class GameOver extends Phaser.Scene {
     }
 
     create() {
-        // Display game over text
-        this.add.text(400, 300, 'Game Over', { fontSize: '48px', fill: '#fff' }).setOrigin(0.5);
+        // Display game over text & restart text
+        this.add.text(400, 300, 'Game Over', { fontSize: '60px', fill: 'Red', fontFamily: 'Brush Script MT'}).setOrigin(0.5);
+        this.add.text(400, 400, 'Press "R" to Restart', { fontSize: '40px', fill: 'Red', fontFamily: 'Brush Script MT'}).setOrigin(0.5);
+    }
+    
+    update() {
+        let keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-        /*
-        // Add a restart button
-        const restartButton = this.add.text(400, 400, 'Restart', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5);
-        restartButton.setInteractive();
-
-        // Handle restart button click
-        restartButton.on('pointerdown', () => {
-            this.scene.start('sceneName'); // Replace 'sceneName' with the key of your main scene
-        });
-        */
+        if(keyR.isDown) {
+            this.scene.start('sceneName');
+        }
     }
 }
