@@ -7,6 +7,14 @@ class Shooter extends Phaser.Scene {
         this.emitMode = false;
         this.score = 0;
         this.lives = 5; // Initialize lives
+
+        this.currentWave = 0; // Initialize current wave
+        this.waves = [
+            { beeCount: 10 }, // Define initial wave (Level 1)
+            { beeCount: 15 }, // Define second wave (Level 1)
+            { beeCount: 20 }, // Define third wave (Level 1)
+            // Define additional waves as needed
+        ];
     }
 
     preload() {
@@ -30,7 +38,7 @@ class Shooter extends Phaser.Scene {
     
         // Initialize path
         this.points = [
-            27, 193, 137, 117, 284, 170, 425, 140, 541, 178, 657, 132, 784, 171
+            27, 193, 137, 117, 284, 170, 425, 140, 541, 178, 657, 132, 784, 171, 870, 130, 950, 150
         ];
         this.curve = new Phaser.Curves.Spline(this.points);
         //this.initializePath();
@@ -43,15 +51,27 @@ class Shooter extends Phaser.Scene {
 
         // Create text for displaying lives
         this.livesText = this.add.text(16, 16, 'Lives: 5', { fontSize: '32px', fill: '#fff' });
+
+        this.startWave(); // Start the first wave
     }
 
-    createBees() {
+    startWave() {
+        let waveData = this.waves[this.currentWave];
+        if (waveData) {
+            this.createBees(waveData.beeCount);
+        } else {
+            // All waves completed, game over or victory condition
+        }
+    }
+
+    createBees(count) {
         let my = this.my;
     
         // Create multiple bee_enemies
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < count; i++) {
             // Randomize starting position for each bees
-            let startX = Phaser.Math.Between(0, 100);
+            // let startX = Phaser.Math.Between(0, 100);
+            let startX = -50;
             let startY = Phaser.Math.Between(100, 400);
     
             // Create bees sprite
@@ -73,9 +93,10 @@ class Shooter extends Phaser.Scene {
                 rotationOffset: -90
             });
 
-        // Schedule bees projectiles to emit every 3 seconds
+        // Schedule bees projectiles to emit every 1 second
+        let delay_time = Phaser.Math.Between(1000, 3000);
         let projectileTimer = this.time.addEvent({
-            delay: 3000, // Emit every 3 seconds
+            delay: delay_time, // Emit every 1 seconds
             callback: () => {
                 this.emitBeesProjectile(bees);
             },
@@ -100,6 +121,12 @@ class Shooter extends Phaser.Scene {
     
         // Destroy the bees sprite
         bees.destroy();
+
+        if (this.my.bee_enemies.length === 0) {
+            // All bees in the current wave are destroyed, start the next wave
+            this.currentWave++;
+            this.startWave();
+        }
     }
     
 
@@ -168,9 +195,10 @@ class Shooter extends Phaser.Scene {
             let pathX = Phaser.Math.Between(0, 800);
             let pathY = 850;
             let angle = Phaser.Math.Angle.Between(projectile.x, projectile.y, pathX, pathY);
-            let velocityX = Math.cos(angle) * 4;
-            let velocityY = Math.sin(angle) * 4;
-            projectile.x += velocityX;
+            //let velocityX = Math.cos(angle) * 4;
+            let velX = Phaser.Math.Between(4, 8);
+            let velocityY = Math.sin(angle) * velX;
+            //projectile.x += velocityX;
             projectile.y += velocityY;
 
             if (projectile.y >= 800) {
