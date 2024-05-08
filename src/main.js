@@ -21,8 +21,8 @@ let config = {
     },
     width: 800,
     height: 760,
-    scene: [Shooter],
-    fps: {forceSetTimeOut: true, target: 30 }
+    scene: [Shooter, GameOver],
+    //fps: {forceSetTimeOut: true, target: 30 }
 }
 
 // Global variable to hold sprites
