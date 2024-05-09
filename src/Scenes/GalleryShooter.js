@@ -302,7 +302,7 @@ class Shooter extends Phaser.Scene {
         my.beesProjectiles.forEach(projectile => {
             if (Phaser.Geom.Intersects.RectangleToRectangle(my.sprite.bunny.getBounds(), projectile.getBounds())) {
                 this.sound.play('hurt', {
-                    rate: 1.,
+                    rate: 1.5,
                 }); // Play hurt sound
                 projectile.visible = false;
                 projectile.destroy();
@@ -318,7 +318,7 @@ class Shooter extends Phaser.Scene {
         my.bluebeesProjectiles.forEach(projectile => {
             if (Phaser.Geom.Intersects.RectangleToRectangle(my.sprite.bunny.getBounds(), projectile.getBounds())) {
                 this.sound.play('hurt', {
-                    rate: 1.25
+                    rate: 1.5,
                 }); // Play hurt sound
                 projectile.visible = false;
                 projectile.destroy();
