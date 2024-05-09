@@ -1,6 +1,6 @@
-class GameOver extends Phaser.Scene {
+class Start extends Phaser.Scene {
     constructor() {
-        super({key: 'GameOver'});
+        super({key: 'Start'});
         this.my = {background: {}};
     }
 
@@ -13,17 +13,18 @@ class GameOver extends Phaser.Scene {
         let my = this.my;
 
         my.background = this.add.image(400,360, "background");
+
         // Display game over text & restart text
-        this.add.text(400, 300, 'Game Over', { fontSize: '60px', fill: '#FFA6C2', fontFamily: 'fantasy'}).setOrigin(0.5);
-        this.add.text(400, 400, 'Press "R" to Restart', { fontSize: '40px', fill: '#FFA6C2', fontFamily: 'fantasy'}).setOrigin(0.5);
+        this.add.text(380, 300, 'Killer Buns', { fontSize: '60px', fill: '#ECBB12', fontFamily: 'fantasy'}).setOrigin(0.5);
+        this.add.text(380, 400, 'Press "S" to Start', { fontSize: '40px', fill: '#ECBB12', fontFamily: 'fantasy'}).setOrigin(0.5);
     }
     
     update() {
-        let keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        let keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
         //this.currhighscore = this.scene.get('sceneName').highscore;
 
-        if(keyR.isDown) {
+        if(keyS.isDown) {
             this.scene.start('sceneName');
         }
     }
