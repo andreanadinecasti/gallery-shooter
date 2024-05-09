@@ -378,6 +378,7 @@ class Shooter extends Phaser.Scene {
 
     gameOver() {
         let my = this.my;
+        this.sound.stopByKey('background_music');
 
         // Reset all vars
         my.bullets = [];
