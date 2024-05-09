@@ -1,6 +1,7 @@
 class GameOver extends Phaser.Scene {
     constructor() {
         super({key: 'GameOver'});
+        //this.currhighscore = 0;
     }
 
     create() {
@@ -11,6 +12,8 @@ class GameOver extends Phaser.Scene {
     
     update() {
         let keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
+        //this.currhighscore = this.scene.get('sceneName').highscore;
 
         if(keyR.isDown) {
             this.scene.start('sceneName');

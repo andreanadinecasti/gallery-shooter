@@ -1,13 +1,13 @@
 class Shooter extends Phaser.Scene {
     constructor() {
         super('sceneName');
-        this.my = { sprite: {}, bullets: [], bee_enemies: [], beesProjectiles: [] }; // Initialize arrays
+        this.my = { background: {}, sprite: {}, bullets: [], bee_enemies: [], beesProjectiles: [], bluebee_enemies: [], bluebeesProjectiles: [] }; // Initialize arrays
         this.bunnyX = 400;
-        this.bunnyY = 670;
+        this.bunnyY = 690;
         this.emitMode = false;
         this.score = 0;
         this.lives = 5; // Initialize lives
-
+        this.highscore = 0; // Highscore
         this.currentWave = 0; // Initialize current wave
         this.bCount = 1;
         this.waves = [
@@ -21,11 +21,17 @@ class Shooter extends Phaser.Scene {
         this.load.image("bunny", "bunny.png");
         this.load.image("bullet", "bunny_bullet.png");
         this.load.image("bee", "b.png");
+        this.load.image("bluebee", "blueb.png");
         this.load.image("shoot", "bee_shooter.png");
+        this.load.image("blueshoot", "blue_bullet.png");
+        this.load.image("background", "background.png");
     }
 
     create() {
         let my = this.my;
+
+        my.background = this.add.image(400,360, "background");
+
         // Create bunny sprite
         my.sprite.bunny = this.add.sprite(this.bunnyX, this.bunnyY, "bunny");
         my.sprite.bunny.setScale(6);
@@ -40,30 +46,46 @@ class Shooter extends Phaser.Scene {
             -100, 100, 2, 71, 113, 69, 113, 185, 219, 192, 235, 77, 379, 69, 377, 182, 504, 192, 518, 68, 646, 63, 660, 181, 779, 185, 
         ];
         this.curve = new Phaser.Curves.Spline(this.points);
+
+        this.points2 = [
+            -100, 100, 12, 29, 229, 56, 327, 164, 352, 294, 259, 328, 133, 297, 144, 208, 253, 119, 373, 73, 484, 47, 604, 36, 659, 109, 703, 206, 637, 288, 546, 310, 478, 232, 496, 155, 583, 114, 704, 53, 838, 48, 939, 51, 993, 57 
+        ];
+        this.curve2 = new Phaser.Curves.Spline(this.points2);
         //this.initializePath();
 
         // Create bee_enemies
-        this.createBees();
+        //this.createBees();
+        //this.createBlueBees();
 
         // Create text for displaying score
-        this.scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '35px', fill: '#fff', fontFamily: 'Brush Script MT'});
+        this.scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '35px', fill: '#ECBB12', fontFamily: 'fantasy'});
 
         // Create text for displaying lives
-        this.livesText = this.add.text(670, 16, 'Lives: 5', { fontSize: '35px', fill: '#fff', fontFamily: 'Brush Script MT'});
+        this.livesText = this.add.text(670, 16, 'Lives: 5', { fontSize: '35px', fill: '#ECBB12', fontFamily: 'fantasy'});
 
         // Create text for wave
-        this.waveText = this.add.text(340, 16, 'Wave 0', { fontSize: '50px', fill: 'Yellow', fontFamily: 'Brush Script MT'});
+        this.waveText = this.add.text(340, 16, 'Wave 0', { fontSize: '50px', fill: '#4AB9DA', fontFamily: 'fantasy'});
+
+        // Create text for highscore
+        this.highscoreText = this.add.text(290, 70, 'Highscore: 0', { fontSize: '35px', fill: '#4AB9DA', fontFamily: 'fantasy'});
 
         this.startWave(); // Start the first wave
     }
 
     startWave() {
+        this.highscoreText.setText('Highscore: ' + this.highscore);
+
         let waveData = this.waves[this.currentWave];
         if (waveData) {
             this.waveText.setText('Wave ' + this.bCount);
             this.bCount++;
             this.waves.push({beeCount: this.bCount});
             this.createBees(waveData.beeCount);
+
+            if (((this.currentWave+1) % 5 == 0)) {
+                let bluebeeCount = (waveData.beeCount)/5;
+                this.createBlueBees(bluebeeCount);
+            }
         } 
     }
 
@@ -79,7 +101,7 @@ class Shooter extends Phaser.Scene {
     
             // Create bees sprite
             let bees = this.add.follower(this.curve, startX, startY, "bee");
-            bees.setScale(4);
+            bees.setScale(5);
             bees.visible = true;
             my.bee_enemies.push(bees);
     
@@ -134,6 +156,65 @@ class Shooter extends Phaser.Scene {
         }
     }
     
+    createBlueBees(count) {
+        let my = this.my;
+    
+        // Create multiple bee_enemies
+        for (let i = 0; i < count; i++) {
+            // Randomize starting position for each bees
+            // let startX = Phaser.Math.Between(0, 100);
+            let startX = -50;
+            let startY = Phaser.Math.Between(100, 400);
+    
+            // Create bees sprite
+            let bees = this.add.follower(this.curve2, startX, startY, "bluebee");
+            bees.setScale(6);
+            bees.visible = true;
+            my.bluebee_enemies.push(bees);
+    
+            // Set up movement along the path
+            let speed = Phaser.Math.Between(6000, 8000); // Randomize speed
+            bees.startFollow({
+                from: 0,
+                to: 1,
+                delay: 0,
+                duration: speed,
+                ease: 'Sine.easeInOut',
+                repeat: -1,
+                yoyo: true,
+                rotateToPath: false,
+                rotationOffset: -90
+            });
+
+        // Schedule bees projectiles to emit every 1 second
+        let delay_time = Phaser.Math.Between(1000, 2000);
+        let projectileTimer = this.time.addEvent({
+            delay: delay_time, // Emit every 1 seconds
+            callback: () => {
+                this.emitBlueBeesProjectile(bees);
+            },
+            loop: true
+        });
+
+        // Store reference to the timer event
+        bees.projectileTimer = projectileTimer;
+        }
+    }
+
+    destroyBlueBees(bees) {
+        let my = this.my;
+    
+        // Cancel the timer event associated with this bees
+        if (bees.projectileTimer) {
+            bees.projectileTimer.destroy();
+        }
+    
+        // Remove the bees from the bee_enemies array
+        my.bluebee_enemies.splice(my.bluebee_enemies.indexOf(bees), 1);
+    
+        // Destroy the bees sprite
+        bees.destroy();
+    }
 
     update() {
         let my = this.my;
@@ -143,6 +224,11 @@ class Shooter extends Phaser.Scene {
 
         // Update bee_enemies
         my.bee_enemies.forEach(bees => {
+            if (!bees.active) return;
+            // Update bees movement or behavior here
+        });
+
+        my.bluebee_enemies.forEach(bees => {
             if (!bees.active) return;
             // Update bees movement or behavior here
         });
@@ -182,6 +268,17 @@ class Shooter extends Phaser.Scene {
                         this.scoreText.setText('Score: ' + this.score); // Update score text
                     }
                 });
+
+                my.bluebee_enemies.forEach(bees => {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.getBounds(), bees.getBounds())) {
+                        bullet.x = -100  ;
+                        bullet.destroy();
+                        my.bullets.splice(my.bullets.indexOf(bullet), 1);
+                        this.destroyBlueBees(bees); // Destroy the bees
+                        this.score += 100; // Increase score
+                        this.scoreText.setText('Score: ' + this.score); // Update score text
+                    }
+                });
             }
         });
 
@@ -198,6 +295,14 @@ class Shooter extends Phaser.Scene {
             }
         });
 
+        my.bluebeesProjectiles.forEach(projectile => {
+            if (Phaser.Geom.Intersects.RectangleToRectangle(my.sprite.bunny.getBounds(), projectile.getBounds())) {
+                projectile.destroy();
+                my.bluebeesProjectiles.splice(my.bluebeesProjectiles.indexOf(projectile), 1);
+                this.gameOver();
+            }
+        });
+
         // Update bees projectiles
         my.beesProjectiles.forEach(projectile => {
             // Slowly float towards the bunny
@@ -210,9 +315,24 @@ class Shooter extends Phaser.Scene {
             //projectile.x += velocityX;
             projectile.y += velocityY;
 
-            if (projectile.y >= 800) {
+            if (projectile.y >= 700) {
                 projectile.destroy();
                 my.beesProjectiles.splice(my.beesProjectiles.indexOf(projectile), 1);
+            }
+        });
+
+        my.bluebeesProjectiles.forEach(projectile => {
+            // Slowly float towards the bunny
+            let pathX = Phaser.Math.Between(0, 800);
+            let pathY = 850;
+            let angle = Phaser.Math.Angle.Between(projectile.x, projectile.y, pathX, pathY);
+            let velocityY = Math.sin(angle) * 8;
+            //projectile.x += velocityX;
+            projectile.y += velocityY;
+
+            if (projectile.y >= 700) {
+                projectile.destroy();
+                my.bluebeesProjectiles.splice(my.bluebeesProjectiles.indexOf(projectile), 1);
             }
         });
     }
@@ -227,9 +347,16 @@ class Shooter extends Phaser.Scene {
     emitBeesProjectile(bees) {
         let my = this.my;
         let projectile = this.add.sprite(bees.x, bees.y, "shoot");
-        projectile.setScale(2.5);
+        projectile.setScale(3);
         projectile.flipY = true;
         my.beesProjectiles.push(projectile);
+    }
+
+    emitBlueBeesProjectile(bees) {
+        let my = this.my;
+        let projectile = this.add.sprite(bees.x, bees.y, "blueshoot");
+        projectile.setScale(4);
+        my.bluebeesProjectiles.push(projectile);
     }
 
     gameOver() {
@@ -239,10 +366,20 @@ class Shooter extends Phaser.Scene {
         my.bullets = [];
         my.bee_enemies = [];
         my.beesProjectiles = [];
+        my.bluebee_enemies = [];
+        my.bluebeesProjectiles = [];
+
+        if (this.highscore < this.score){
+            this.highscore = this.score;
+        }
+
+        console.log(this.highscore);
+
         this.lives = 5;
         this.currentWave = 0;
         this.bCount = 1
         this.score = 0;
+
         this.waves = [
             { beeCount: this.bCount } // Define initial wave (Level 1)
         ];
