@@ -29,6 +29,7 @@ class GameOver extends Phaser.Scene {
             this.scene.start('sceneName');
         }
         if(keyS.isDown) {
+            this.scene.get('sceneName').highscore = 0;
             this.scene.start('Start');
         }
     }
