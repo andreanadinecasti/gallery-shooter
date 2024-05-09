@@ -93,8 +93,8 @@ class Shooter extends Phaser.Scene {
             this.waves.push({beeCount: this.bCount});
             this.createBees(waveData.beeCount);
 
-            if (((this.currentWave+1) % 5 == 0)) {
-                let bluebeeCount = (waveData.beeCount)/5;
+            if (((this.currentWave+1) % 3 == 0)) {
+                let bluebeeCount = (waveData.beeCount)/3;
                 this.createBlueBees(bluebeeCount);
             }
         } 
