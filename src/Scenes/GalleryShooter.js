@@ -25,10 +25,21 @@ class Shooter extends Phaser.Scene {
         this.load.image("shoot", "bee_shooter.png");
         this.load.image("blueshoot", "blue_bullet.png");
         this.load.image("background", "background.png");
+
+        //this.load.audio(laser, path);
+        this.load.audio('laser', 'laserSmall_000.ogg');
+        this.load.audio('background_music', 'lil-pipa-riff-36218.mp3');
+        this.load.audio('buzz', 'sound-effect-bees-buzzing-153375.mp3');
+
     }
 
     create() {
         let my = this.my;
+
+        this.sound.play('background_music', {
+            loop: true,
+            rate: 1.25
+        });
 
         my.background = this.add.image(400,360, "background");
 
@@ -90,6 +101,9 @@ class Shooter extends Phaser.Scene {
     }
 
     createBees(count) {
+        this.sound.play('buzz', {
+            volume: 0.5 
+         });
         let my = this.my;
     
         // Create multiple bee_enemies
@@ -339,6 +353,9 @@ class Shooter extends Phaser.Scene {
 
     emitBullet() {
         let my = this.my;
+        this.sound.play('laser', {
+            volume: 0.5 
+         });
         let bullet = this.add.sprite(my.sprite.bunny.x, my.sprite.bunny.y, "bullet");
         bullet.setScale(1.5);
         my.bullets.push(bullet);
