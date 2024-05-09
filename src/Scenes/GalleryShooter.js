@@ -404,7 +404,7 @@ class Shooter extends Phaser.Scene {
             this.highscore = this.score;
         }
 
-        console.log(this.highscore);
+        //console.log(this.highscore);
 
         this.lives = 5;
         this.currentWave = 0;
