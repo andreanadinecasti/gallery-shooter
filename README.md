@@ -54,6 +54,12 @@ This game was built for CMPM 120’s **Game 2(b)**: Gallery Shooter Implementati
 
 ---
 
+## 🔗 Links
+
+- 🎮 [Play the Game on GitHub Pages] (https://andreanadinecasti.github.io/gallery-shooter/)
+
+---
+
 ## 🎨 Credits
 
 - Game by **Andrea Castillo**  
