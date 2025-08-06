@@ -54,13 +54,6 @@ This game was built for CMPM 120’s **Game 2(b)**: Gallery Shooter Implementati
 
 ---
 
-## 🔗 Links
-
-- 🔧 [GitHub Repo](https://github.com/your-username/killer-buns)  
-- 🎮 [Play the Game on GitHub Pages](https://your-username.github.io/killer-buns)
-
----
-
 ## 🎨 Credits
 
 - Game by **Andrea Castillo**  
